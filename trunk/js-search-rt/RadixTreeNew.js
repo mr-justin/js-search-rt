@@ -9,7 +9,7 @@
  * RadixTree Object definition
  *
  * how to use:
- *   var [variable_name] = Object.create(RadixTree, {
+ *   var [object_name] = Object.create(RadixTree, {
  *     // RadixTree Object properties
  *     keywordCount: { value:0, writable:true },
  *     dataCount: { value:0, writable:true },
