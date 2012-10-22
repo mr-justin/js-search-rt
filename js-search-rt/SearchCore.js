@@ -17,6 +17,7 @@
  *     //optional properties
  *     keySwap: {value:{key:swap}, writable:true }
  *   });
+ *
  */
 function SearchCore() {};
 
