@@ -6,25 +6,19 @@
  */
 
 /*****
- * SearchCore Object definition
+ * RadixTree Object definition
  *
- * how to create:
- *   var SearchCore = Object.create(SearchCore.prototype, {
- *     //SearchCore Object properties
+ * how to use:
+ *   var [variable_name] = Object.create(RadixTree, {
+ *     // RadixTree Object properties
  *     keywordCount: { value:0, writable:true },
  *     dataCount: { value:0, writable:true },
- *     tree: { value:{}, writable:true }(,)
+ *     tree: { value:{}, writable:true }
  *     //optional properties
- *     keySwap: {value:{key:swap}, writable:true }
+ *     ,keySwap: { value: {key:swap_key} }
  *   });
- *
  */
-function SearchCore() {};
-
-/*****
- * SearchCore Object prototype functions
- */
-SearchCore.prototype = {
+var RadixTree = Object.create({}, {
 
 	/***************************************************************************
 	 * Insert Functions
@@ -44,50 +38,61 @@ SearchCore.prototype = {
 	 *   data for the key or creates a new node in the data
 	 *   structure.
 	 */
-	insert: function insert(key, data) {
-		var index = new Index(this.tree),
-			callbacks = new Callbacks(this._createNode, this._createNode, this._insertData, this._splitNode);
+	insert: { value: function insert(key, data) {
+		var index = Object.create(null, {
+				node: { value: this.tree, writable: true },
+				nodeKey: { value: "", writable: true },
+				charsMatch: { value: 0, writable: true },
+				ttlCharsMatch: { value: 0, writable: true },
+				parents: { value: [], writable: true }
+			}),
+			callbacks = Object.create(null, {
+				nonExists: { value: this._createNode },
+				suffix: { value: this._createNode },
+				exact: { value: this._insertData },
+				exists: { value: this._splitNode }
+			});
 
 		//process key
 		key = this._processKey(key);
 
 		//start recursive insert
 		this._traverse(key, data, index, callbacks);
-	},
+	}, enumerable: true },
 
 	/*****
 	 * _insertData()
 	 * The purpose of this function is to insert a data into the
 	 *   existing node.
 	 */
-	_insertData: function _insertData(key, data, index) {
+	_insertData: { value: function _insertData(key, data, index) {
 		if (index.node.$ && index.node.$.length) {
 			index.node.$.push(data);
 		} else {
 			index.node.$ = [data];
 		}
 		this.dataCount++;
-	},
+	} },
 
 	/*****
 	 * _createNode()
 	 * The purpose of this function is to create a new node in
 	 *   the data structure and add it to the array of words.
 	 */
-	_createNode: function _createNode(key, data, index) {
+	_createNode: { value: function _createNode(key, data, index) {
 		if (index.ttlCharsMatch !== 0) {
 			key = key.substr(index.ttlCharsMatch);
 		}
 		index.node[key] = {$:[data]};
 		this.keywordCount++;
 		this.dataCount++;
-	},
+	} },
 
 	/*****
 	 * _splitNode()
 	 * The purpose of this function is to split an existing node
 	 */
-	_splitNode: function _splitNode(key, data, index) {
+	_splitNode: { value: function _splitNode(key, data, index) {
 		//create new key for existing content
 		var i = index.ttlCharsMatch - index.charsMatch,
 			tempKey = "",
@@ -111,7 +116,7 @@ SearchCore.prototype = {
 		delete index.node[index.nodeKey];
 		this.keywordCount++;
 		this.dataCount++;
-	},
+	} },
 
 	/***************************************************************************
 	 * Remove Functions
@@ -130,16 +135,27 @@ SearchCore.prototype = {
 	 *   the key exists and either removes the data or responds
 	 *   with an appropriate error message why nothing was removed.
 	 */
-	remove: function remove(key, data) {
-		var index = new Index(this.tree),
-			callbacks = new Callbacks(this._removeError, this._removeError, this._removeData, this._removeError);
+	remove: { value: function remove(key, data) {
+		var index = Object.create(null, {
+			node: { value: this.tree, writable: true },
+			nodeKey: { value: "", writable: true },
+			charsMatch: { value: 0, writable: true },
+			ttlCharsMatch: { value: 0, writable: true },
+			parents: { value: [], writable: true }
+		}),
+		callbacks = Object.create(null, {
+			nonExists: { value: this._removeError },
+			suffix: { value: this._removeError },
+			exact: { value: this._removeData },
+			exists: { value: this._removeError }
+		});
 
 		//process key
 		key = this._processKey(key);
 
 		//start recursive removal
 		this._traverse(key, data, index, callbacks);
-	},
+	}, enumerable: true },
 
 	/*****
 	 * _removeData()
@@ -147,7 +163,7 @@ SearchCore.prototype = {
 	 *   exists on the matching node. If so, then remove the data.
 	 *   If not, then throw an error message.
 	 */
-	_removeData: function _removeData(key, data, index) {
+	_removeData: { value: function _removeData(key, data, index) {
 		var testData = JSON.stringify(data);
 
 		//find matching data
@@ -174,7 +190,7 @@ SearchCore.prototype = {
 		} else {
 			console.log("Removal failed. Key: '" + key + "' matched but cound not find matching data to remove.");
 		}
-	},
+	} },
 
 	/*****
 	 * _removeEmptyParents()
@@ -182,7 +198,7 @@ SearchCore.prototype = {
 	 *   node that was removed in order to clean-up any additional
 	 *   empty nodes.
 	 */
-	_removeEmptyParents: function _removeEmptyParents(parents) {
+	_removeEmptyParents: { value: function _removeEmptyParents(parents) {
 		//reverse order of parents array to traverse up the tree
 		parents.reverse();
 		//check parents for empty nodes
@@ -194,7 +210,7 @@ SearchCore.prototype = {
 				}
 			}
 		}
-	},
+	} },
 
 	/*****
 	 * _removeError()
@@ -202,7 +218,7 @@ SearchCore.prototype = {
 	 *   message based on what exactly went wrong when traversing the
 	 *   tree for the appropriate key.
 	 */
-	_removeError: function _removeError(key, data, index) {
+	_removeError: { value: function _removeError(key, data, index) {
 		switch(true) {
 			//if key doesn't exist
 			case (index.ttlCharsMatch === 0):
@@ -220,7 +236,7 @@ SearchCore.prototype = {
 			default:
 				console.log("process results failed: " + key);
 		}
-	},
+	} },
 
 	/***************************************************************************
 	 * Build Function
@@ -234,10 +250,10 @@ SearchCore.prototype = {
 	 *   structure as a JSON object so that it can be returned as
 	 *   a flat file to be referenced at runtime on the front end.
 	 */
-	buildJSONString: function buildJSONString() {
+	buildJSONString: { value: function buildJSONString() {
 		//back-end part of web service to return a copy of the tree
 		return JSON.stringify(this.tree);
-	},
+	}, enumerable: true },
 
 	/***************************************************************************
 	 * Utility Functions
@@ -256,7 +272,7 @@ SearchCore.prototype = {
 	 *   node on the tree is found, it passes the key, data, index,
 	 *   and callbacks to _processResults().
 	 */
-	_traverse: function _traverse(key, data, index, callbacks) {
+	_traverse: { value: function _traverse(key, data, index, callbacks) {
 		var tempKey = key.substr(index.ttlCharsMatch),
 			tempMatch = index.ttlCharsMatch;
 
@@ -290,14 +306,14 @@ SearchCore.prototype = {
 		} else {
 			this._processResults(key, data, index, callbacks);
 		}
-	},
+	} },
 
 	/*****
 	 * _processResults()
 	 * The purpose of this function is to process the results of the
 	 *   tree traversal with callbacks to either insert or remove.
 	 */
-	_processResults: function _processResults(key, data, index, callbacks) {
+	_processResults: { value: function _processResults(key, data, index, callbacks) {
 		switch(true) {
 			//if key doesn't exist
 			case (index.ttlCharsMatch === 0):
@@ -319,7 +335,7 @@ SearchCore.prototype = {
 			default:
 				console.log("Process results failed: " + key);
 		}
-	},
+	} },
 
 	/*****
 	 * _processKey()
@@ -327,19 +343,19 @@ SearchCore.prototype = {
 	 *   better search string exists. Whether or not a keySwap takes place,
 	 *   it returns a lower case key with spaces converted to underscores.
 	 */
-	_processKey: function _processKey(key) {
+	_processKey: { value: function _processKey(key) {
 		if (this.keySwap && this.keySwap[key]) {
 			key = this.keySwap[key];
 		}
 		return key.toLowerCase().replace(/ /g,"_");
-	},
+	} },
 
 	/*****
 	 * _leafCount()
 	 * The purpose of this function is to get the amount of children in the node
 	 *   but is limited to just the children, not the keyword data stored in $.
 	 */
-	_leafCount: function _leafCount(node) {
+	_leafCount: { value: function _leafCount(node) {
 		var size = 0;
 		for (var key in node) {
 			if (node.hasOwnProperty(key) && key !== "$") {
@@ -347,41 +363,13 @@ SearchCore.prototype = {
 			}
 		}
 		return size;
-	},
+	} },
 
 	/*****
 	 * _isEmpty()
 	 * The purpose of this function is to check if a leaf node is empty.
 	 */
-	_isEmpty: function _isEmpty(node) {
+	_isEmpty: { value: function _isEmpty(node) {
 		return Object.keys(node).length === 0;
-	}
-}
-
-/*****
- * Index Object
- * The purpose of this object is to hold data used when traversing the tree
- */
-function Index(node) {
-	return {
-		node: node,
-		nodeKey: "",
-		charsMatch: 0,
-		ttlCharsMatch: 0,
-		parents:[]
-	}
-}
-
-/*****
- * Callbacks Object
- * The purpose of this object is to hold callbacks used when processing results
- */
-function Callbacks(callback1, callback2, callback3, callback4) {
-	return {
-		nonExists: callback1,
-		suffix: callback2,
-		exact: callback3,
-		exists: callback4
-	}
-}
-
+	} }
+});
