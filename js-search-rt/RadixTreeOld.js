@@ -9,9 +9,9 @@
  * SearchCore Object definition
  *
  * how to create:
- *   var [variable_name] = Object.create(SearchCore, {
+ *   var [object_name] = new RadixTree();
  *     //optional properties
- *     keySwap: {value:{key:swap}, writable:true }
+ *     [object_name].keySwap = {key:swap_key};
  *   });
  *
  */
