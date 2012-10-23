@@ -23,9 +23,9 @@ function RadixTree() {
 	}
 };
 
-/*****
+/***************************************************************************
  * SearchCore Object prototype functions
- */
+ **************************************************************************/
 
 /***************************************************************************
  * Insert Functions
@@ -44,6 +44,10 @@ function RadixTree() {
  *   the key exists and either inserts the existing
  *   data for the key or creates a new node in the data
  *   structure.
+ *
+ * @params
+ * key = mandatory, new key String used to insert new node and/or new data
+ * data = mandatory, new "data" to attach to new/exiting node
  */
 RadixTree.prototype.insert = function insert(key, data) {
 	var index = new Index(this.tree),
@@ -60,6 +64,11 @@ RadixTree.prototype.insert = function insert(key, data) {
  * _insertData()
  * The purpose of this function is to insert a data into the
  *   existing node.
+ *
+ * @params
+ * key = mandatory, existing key String used to insert data
+ * data = mandatory, new "data" to attach to existing node
+ * index = mandatory, Index object used to provide info of the tree
  */
 RadixTree.prototype._insertData = function _insertData(key, data, index) {
 	if (index.node.$ && index.node.$.length) {
@@ -74,6 +83,11 @@ RadixTree.prototype._insertData = function _insertData(key, data, index) {
  * _createNode()
  * The purpose of this function is to create a new node in
  *   the data structure and add it to the array of words.
+ *
+ * @params
+ * key = mandatory, new key String used to add new node
+ * data = mandatory, new "data" to attach to new node
+ * index = mandatory, Index object used to provide info of the tree
  */
 RadixTree.prototype._createNode = function _createNode(key, data, index) {
 	if (index.ttlCharsMatch !== 0) {
@@ -86,7 +100,12 @@ RadixTree.prototype._createNode = function _createNode(key, data, index) {
 
 /*****
  * _splitNode()
- * The purpose of this function is to split an existing node
+ * The purpose of this function is to split an existing node.
+ *
+ * @params
+ * key = mandatory, new key String used to split existing nodes and add new node
+ * data = mandatory, new "data" to attach to new node
+ * index = mandatory, Index object used to provide info of the tree
  */
 RadixTree.prototype._splitNode = function _splitNode(key, data, index) {
 	//create new key for existing content
@@ -130,6 +149,10 @@ RadixTree.prototype._splitNode = function _splitNode(key, data, index) {
  * The purpose of this function is to check whether or not
  *   the key exists and either removes the data or responds
  *   with an appropriate error message why nothing was removed.
+ *
+ * @params
+ * key = mandatory, signifies key String to remove
+ * data = optional, if no "data" is passed, node will be removed
  */
 RadixTree.prototype.remove = function remove(key, data) {
 	var index = new Index(this.tree),
@@ -147,33 +170,50 @@ RadixTree.prototype.remove = function remove(key, data) {
  * The purpose of this function is to first check if the data
  *   exists on the matching node. If so, then remove the data.
  *   If not, then throw an error message.
+ *
+ * @params
+ * key = mandatory, existing key String used to remove either key or data
+ * data = mandatory, existing "data" used to delete or "undefined" to delete entire node
+ * index = mandatory, Index object used to provide info of the tree
  */
 RadixTree.prototype._removeData = function _removeData(key, data, index) {
-	var testData = JSON.stringify(data);
-
-	//find matching data
-	for (var i = 0, arrlen = index.node.$.length; i < arrlen; i++) {
-		if (testData === JSON.stringify(index.node.$[i])) {
-			break;
+	//if data is undefined, delete node
+	if (typeof data === "undefined") {
+		this.dataCount = this.dataCount - index.node.$.length;
+		delete index.node.$;
+		this.keywordCount--;
+		//if node is empty, remove empty nodes
+		if (this._isEmpty(index.node)) {
+			this._removeEmptyParents(index.parents);
 		}
-	}
+	//else delete data
+	} else {
+		var testData = JSON.stringify(data);
 
-	//if match is found, remove data
-	if (i < arrlen) {
-		index.node.$.splice(i,1);
-		this.dataCount--;
-		//if data is empty, perform additional cleanup of node
-		if (index.node.$.length === 0) {
-			delete index.node.$;
-			this.keywordCount--;
-			//if node is empty, remove empty nodes
-			if (this._isEmpty(index.node)) {
-				this._removeEmptyParents(index.parents);
+		//find matching data
+		for (var i = 0, arrlen = index.node.$.length; i < arrlen; i++) {
+			if (testData === JSON.stringify(index.node.$[i])) {
+				break;
 			}
 		}
-	//else log error that data doesn't exist
-	} else {
-		console.log("Removal failed. Key: '" + key + "' matched but cound not find matching data to remove.");
+
+		//if match is found, remove data
+		if (i < arrlen) {
+			index.node.$.splice(i,1);
+			this.dataCount--;
+			//if data is empty, perform additional cleanup of node
+			if (index.node.$.length === 0) {
+				delete index.node.$;
+				this.keywordCount--;
+				//if node is empty, remove empty nodes
+				if (this._isEmpty(index.node)) {
+					this._removeEmptyParents(index.parents);
+				}
+			}
+		//else log error that data doesn't exist
+		} else {
+			console.log("Removal failed. Key: '" + key + "' matched but cound not find matching data to remove.");
+		}
 	}
 };
 
@@ -182,6 +222,9 @@ RadixTree.prototype._removeData = function _removeData(key, data, index) {
  * The purpose of this function is check the parents of the
  *   node that was removed in order to clean-up any additional
  *   empty nodes.
+ *
+ * @params
+ * parents = mandatory, Object[] used to remove additional empty nodes
  */
 RadixTree.prototype._removeEmptyParents = function _removeEmptyParents(parents) {
 	//reverse order of parents array to traverse up the tree
@@ -202,6 +245,11 @@ RadixTree.prototype._removeEmptyParents = function _removeEmptyParents(parents) 
  * The purpose of this function is to log the appropriate error
  *   message based on what exactly went wrong when traversing the
  *   tree for the appropriate key.
+ *
+ * @params
+ * key = mandatory, String searched against to process error message
+ * data = mandatory, "data" not used but mandatory for standardizing _processResults
+ * index = mandatory, Index object used to provide info of the tree
  */
 RadixTree.prototype._removeError = function _removeError(key, data, index) {
 	switch(true) {
@@ -237,7 +285,7 @@ RadixTree.prototype._removeError = function _removeError(key, data, index) {
  */
 RadixTree.prototype.buildJSONString = function buildJSONString() {
 	//back-end part of web service to return a copy of the tree
-	return JSON.stringify(this.tree);
+	return JSON.stringify(this.tree, null, 2);
 };
 
 /***************************************************************************
@@ -255,7 +303,13 @@ RadixTree.prototype.buildJSONString = function buildJSONString() {
  * The purpose of this function is to recursively traverse the
  *   data structure to find the matching node. Once the correct
  *   node on the tree is found, it passes the key, data, index,
- *   and callbacks to _processResults().
+ *   and callbacks to _processResults.
+ *
+ * @params
+ * key = mandatory, String used to _processResults of tree traversal
+ * data = mandatory, "data" used to _processResults
+ * index = mandatory, Index object used to provide info of the tree
+ * callbacks = mandatory, Callbacks object used to _processResults
  */
 RadixTree.prototype._traverse = function _traverse(key, data, index, callbacks) {
 	var tempKey = key.substr(index.ttlCharsMatch),
@@ -297,6 +351,12 @@ RadixTree.prototype._traverse = function _traverse(key, data, index, callbacks) 
  * _processResults()
  * The purpose of this function is to process the results of the
  *   tree traversal with callbacks to either insert or remove.
+ *
+ * @params
+ * key = mandatory, String used to _processResults of tree traversal
+ * data = mandatory, "data" used to _processResults
+ * index = mandatory, Index object used to provide info of the tree
+ * callbacks = mandatory, Callbacks object used to _processResults
  */
 RadixTree.prototype._processResults = function _processResults(key, data, index, callbacks) {
 	switch(true) {
@@ -327,6 +387,9 @@ RadixTree.prototype._processResults = function _processResults(key, data, index,
  * The purpose of this function is to check the keySwap first to see if a
  *   better search string exists. Whether or not a keySwap takes place,
  *   it returns a lower case key with spaces converted to underscores.
+ *
+ * @param
+ * key = mandatory, String used to process key before being entered/removed from the tree
  */
 RadixTree.prototype._processKey = function _processKey(key) {
 	if (this.keySwap && this.keySwap[key]) {
@@ -339,6 +402,9 @@ RadixTree.prototype._processKey = function _processKey(key) {
  * _leafCount()
  * The purpose of this function is to get the amount of children in the node
  *   but is limited to just the children, not the keyword data stored in $.
+ *
+ * @param
+ * node = mandatory, Object used to check how many leaf nodes it contains
  */
 RadixTree.prototype._leafCount = function _leafCount(node) {
 	var size = 0;
@@ -353,6 +419,9 @@ RadixTree.prototype._leafCount = function _leafCount(node) {
 /*****
  * _isEmpty()
  * The purpose of this function is to check if a leaf node is empty.
+ *
+ * @param
+ * node = mandatory, Object used to check if node is empty
  */
 RadixTree.prototype._isEmpty = function _isEmpty(node) {
 	return Object.keys(node).length === 0;
@@ -361,6 +430,13 @@ RadixTree.prototype._isEmpty = function _isEmpty(node) {
 /*****
  * Index Object
  * The purpose of this object is to hold data used when traversing the tree
+ *
+ * @params
+ * node = mandatory, Object used to reference current matching node in the tree
+ * nodeKey = mandatory, String contains current node key used for processing inserts
+ * charsMatch = mandatory, int used to specify how many characters match on the current node
+ * ttlCharsMatch = mandatory, int used to specify how my total characters match the current key
+ * parents = mandatory, Object[] used to hold references of all the matching parent nodes
  */
 function Index(node) {
 	return {
@@ -375,6 +451,12 @@ function Index(node) {
 /*****
  * Callbacks Object
  * The purpose of this object is to hold callbacks used when processing results
+ *
+ * @params
+ * nonExists = mandatory, Function used to reference callback used when key doesn't exist
+ * suffix = mandatory, Function used to reference callback used when key contains suffix of matching keyword
+ * exact = mandatory, Function used to reference callback when exact match is found
+ * exists = mandatory, Function used to reference callback when parts of the key exist in the tree
  */
 function Callbacks(callback1, callback2, callback3, callback4) {
 	return {
