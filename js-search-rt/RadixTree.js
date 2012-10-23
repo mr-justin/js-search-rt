@@ -11,9 +11,9 @@
  * how to use:
  *   var [object_name] = Object.create(RadixTree, {
  *     // RadixTree Object properties
- *     keywordCount: { value:0, writable:true },
- *     dataCount: { value:0, writable:true },
- *     tree: { value:{}, writable:true }
+ *     keywordCount: { value:0, writable:true, enumerable:true },
+ *     dataCount: { value:0, writable:true, enumerable:true },
+ *     tree: { value:{}, writable:true, enumerable:true }
  *     //optional properties
  *     ,keySwap: { value: {key:swap_key} }
  *   });

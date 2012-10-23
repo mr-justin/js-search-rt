@@ -16,9 +16,11 @@
  *
  */
 function RadixTree() {
-	this.keywordCount = 0;
-	this.dataCount = 0;
-	this.tree = {};
+	return {
+		keywordCount: 0,
+		dataCount: 0,
+		tree: {}
+	}
 };
 
 /*****
