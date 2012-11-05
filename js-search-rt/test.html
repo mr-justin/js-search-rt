@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<head>
+	<title>JS Radix Tree test page</title>
+	<script type="text/javascript" src="src/com/js/lib/jquery-1.8.1.min.js"></script>
+	<script type="text/javascript" src="src/svr/js/RadixTree.js"></script>
+	<!-- <script type="text/javascript" src="src/svr/js/RadixTreeClassical.js"></script> -->
+	<!-- <script type="text/javascript" src="src/svr/js/RadixTreeClosure.js"></script> -->
+
+	<style>
+		/* tags */
+		h3,h4{margin:0}
+		label{margin:0 0 10px;width:150px;display:inline-block}
+		input[type=text]{width:190px}
+		.form{border:1px solid #000000;margin:0 10px 10px 0;padding:10px;width:350px;float:left}
+
+		/* wrappers */
+		#pageWrapper{padding:20px;width:1150px}
+
+		/* formatting classes */
+		.clear{clear:both}
+	</style>
+</head>
+<body>
+	<script>
+		"use strict";
+		$(document).ready(function(){
+			//RadixTree closure 
+			//var rTree = RadixTree(), 
+
+			//RadixTree classical 
+			//var rTree = new RadixTree(), 
+
+			var rTree = Object.create(RadixTree, { 
+					// RadixTree Object properties 
+					keywordCount: { value:0, writable:true, enumerable:true }, 
+					dataCount: { value:0, writable:true, enumerable:true }, 
+					tree: { value:{}, writable:true, enumerable:true }, 
+					//optional properties 
+					keySwap: { value:{key:"swap_key"} }
+				}), 
+				ikey = document.getElementById("ikey"),
+				isku = document.getElementById("isku"),
+				rkey = document.getElementById("rkey"),
+				rsku = document.getElementById("rsku");
+
+			//optional Classical properties 
+			//rTree.keySwap = {key:"swap_key"}; 
+
+			rTree.insert("Iron Man", "Blu-ray");
+			rTree.insert("Iron Man 2", "Blu-ray");
+			rTree.insert("Casino Royale", "Blu-ray");
+			rTree.insert("Quantum of Solace", "Blu-ray");
+			rTree.insert("Sherlock Holmes", "Blu-ray");
+			rTree.insert("Thor", "Blu-ray");
+			rTree.insert("X-Men First Class", "Blu-ray");
+			rTree.insert("X-Men", "DVD");
+			rTree.insert("X2", "DVD");
+			rTree.insert("X-Men The Last Stand", "DVD");
+			rTree.insert("The Bourne Identity", "Blu-ray");
+			rTree.insert("The Bourne Supremacy", "Blu-ray");
+			rTree.insert("The Bourne Ultimatum", "Blu-ray");
+			rTree.insert("Hellboy", "Blu-ray");
+			rTree.insert("Hellboy 2 The Golden Army", "Blu-ray");
+			rTree.insert("Clash of the Titans", "Blu-ray");
+			rTree.insert("Kill Bill Vol 1", "Blu-ray");
+			rTree.insert("Kill Bill Vol 2", "Blu-ray");
+			rTree.insert("Taken", "Blu-ray");
+			rTree.insert("Fast Five", "Blu-ray");
+			rTree.insert("The Hitchhiker's Guide to the Galaxy", "Blu-ray");
+			rTree.insert("Batman Begins", "Blu-ray");
+			rTree.insert("The Dark Knight", "Blu-ray");
+			rTree.insert("The Incredible Hulk", "Blu-ray");
+			rTree.insert("Gone in 60 Seconds", "DVD");
+			rTree.insert("Pirates of the Caribbean The Curse of the Black Pearl", "Blu-ray");
+			rTree.insert("Pirates of the Caribbean Dead Man's Chest", "Blu-ray");
+			rTree.insert("Pirates of the Caribbean At World's End", "Blu-ray");
+			rTree.insert("Unforgiven", "Blu-ray");
+			rTree.insert("Groundhog Day", "Blu-ray");
+			rTree.insert("Beetlejuice", "Blu-ray");
+			rTree.insert("Live Free or Die Hard");
+			rTree.insert("Star Trek", "Blu-ray");
+			rTree.insert("The Punisher", "Blu-ray");
+			rTree.insert("I Love You Man", "Blu-ray");
+			rTree.insert("Grumpy Old Men", "Blu-ray");
+			rTree.insert("Grumpier Old Men", "Blu-ray");
+			rTree.insert("Ghostbusters", "Blu-ray");
+			rTree.insert("Super Troopers", "Blu-ray");
+			rTree.insert("The Hangover", "Blu-ray");
+			rTree.insert("Tommy Boy", "Blu-ray");
+			rTree.insert("Gran Torino", "Blu-ray");
+			rTree.insert("True Grit", "Blu-ray");
+			rTree.insert("Elf", "Blu-ray");
+			rTree.insert("300", "Blu-ray");
+			rTree.insert("Crank", "Blu-ray");
+			rTree.insert("No Country For Old Men", "Blu-ray");
+			rTree.insert("Zombieland", "Blu-ray");
+			rTree.insert("Jackie Brown", "Blu-ray");
+			rTree.insert("Hot Rod", "DVD");
+			rTree.insert("Me Myself and Irene", "DVD");
+			rTree.insert("The Incredibles", "DVD");
+			rTree.insert("The International", "DVD");
+			rTree.insert("The Outlaw Josey Wales", "DVD");
+			rTree.insert("Equilibrium", "DVD");
+			rTree.insert("Snatch", "DVD");
+			rTree.insert("Last Man Standing", "DVD");
+			rTree.insert("Pride and Glory", "DVD");
+			rTree.insert("Secret Window", "DVD");
+			rTree.insert("Rear Window", "DVD");
+			rTree.insert("The Transporter 2", "DVD");
+			rTree.insert("The Transporter 3", "Blu-ray");
+			rTree.insert("The Jungle Book", "DVD");
+			rTree.insert("Extract", "DVD");
+			rTree.insert("Open Season", "DVD");
+			rTree.insert("300", "DVD");
+			rTree.insert("Defiance", "DVD");
+			rTree.insert("Swordfish", "DVD");
+			rTree.insert("Hitman", "Blu-ray");
+			rTree.insert("The Lord of the Rings The Fellowship of the Ring", "DVD");
+			rTree.insert("The Lord of the Rings The Two Towers", "DVD");
+			rTree.insert("The Lord of the Rings The Return of the King", "DVD");
+			rTree.insert("Star Wars", "DVD");
+			rTree.insert("Star Wars", "VHS");
+			rTree.insert("Star Wars Episode V The Empire Strikes Back", "DVD");
+			rTree.insert("Star Wars Episode V The Empire Strikes Back", "VHS");
+			rTree.insert("Star Wars Episode VI Return of the Jedi", "DVD");
+			rTree.insert("Star Wars Episode VI Return of the Jedi", "VHS");
+			rTree.insert("Star Wars Episode I The Phantom Menace", "DVD");
+			rTree.insert("Star Wars Episode II Attack of the Clones", "DVD");
+			rTree.insert("Star Wars Episode III Revenge of the Sith", "DVD");
+
+			$("#iPair").on("click",function(e) {
+				e.preventDefault();
+				rTree.insert(ikey.value, isku.value);
+				ikey.value = "";
+				isku.value = "";
+			});
+			$("#rPair").on("click",function(e) {
+				e.preventDefault();
+				rTree.remove(rkey.value, rsku.value);
+				rkey.value = "";
+				rsku.value = "";
+			});
+			$("#displayTree").on("click",function(e) {
+				e.preventDefault();
+				var data = rTree.buildJSONString();
+				$("#outputWrapper").text(data);
+			});
+			$("#displayDataCount").on("click",function(e) {
+				e.preventDefault();
+				var data = "Data Count = "+rTree.dataCount;
+				$("#outputWrapper").text(data);
+			});
+			$("#displayKeywordCount").on("click",function(e) {
+				e.preventDefault();
+				var data = "Keyword Count = "+rTree.keywordCount;
+				$("#outputWrapper").text(data);
+			});
+		});
+	</script>
+	<div id="pageWrapper">
+		<h3>Input</h3>
+		<div class="form">
+			<h4>Insert</h4>
+			<label for="ikey">Enter keyword string:</label>
+			<input type="text" id="ikey" tabindex="1" />
+			<div class="clear"></div>
+			<label for="sku">Enter associated string, int, or object literal:</label>
+			<input type="text" id="isku" tabindex="2" />
+			<div class="clear"></div>
+			<input id="iPair" type="button" value="Add Pair" tabindex="3" />
+		</div>
+		<div class="form">
+			<h4>Remove</h4>
+			<label for="rkey">Enter keyword string:</label>
+			<input type="text" id="rkey" tabindex="4" />
+			<div class="clear"></div>
+			<label for="rsku">Enter associated string, int, or object literal:</label>
+			<input type="text" id="rsku" tabindex="5" />
+			<div class="clear"></div>
+			<input id="rPair" type="button" value="Remove Pair" tabindex="6" />
+		</div>
+		<div class="form">
+			<h4>Display</h4>
+			<input id="displayDataCount" type="button" value="Display Data Count" tabindex="7" />
+			<input id="displayKeywordCount" type="button" value="Display Keyword Count" tabindex="8" />
+			<input id="displayTree" type="button" value="Display Tree" tabindex="9" />
+		</div>
+		<div class="clear"></div>
+		<h3>Output</h3>
+		<div><pre id="outputWrapper"></pre></div>
+	</div>
+</body>
+
